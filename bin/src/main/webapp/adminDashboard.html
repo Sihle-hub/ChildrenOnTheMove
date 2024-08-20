@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin Dashboard</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- Bootstrap Icons CSS -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+	<style>
+		.sidebar {
+			background-color: #333;
+			color: #fff;
+			height: 100vh;
+			position: fixed;
+			top: 0;
+			left: 0;
+			z-index: 999;
+			overflow-x: hidden;
+			padding-top: 20px;
+		}
+
+		.sidebar ul {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+
+		}
+
+		.sidebar ul li {
+			padding: 10px;
+			position: relative;
+		}
+
+		.sidebar ul li a {
+			color: #fff;
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+		}
+
+		.sidebar ul li a:hover {
+			background-color: #555;
+		}
+
+		.submenu {
+			display: none;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			background-color: #555;
+			min-width: 150px;
+			z-index: 1;
+			/* Ensure submenu appears above content */
+		}
+
+		.submenu li {
+			padding: 10px;
+		}
+
+		.nav-item.dropdown:hover .submenu {
+			display: block;
+		}
+
+
+		/* Ensure the main content area is positioned correctly and takes up the remaining space */
+		main {
+			margin-left: 250px;
+			/* Adjust to match the width of the sidebar */
+			padding: 20px;
+			/* Adjust padding as needed */
+			height: 100vh;
+			/* Full viewport height */
+			overflow-y: auto;
+			/* Allows vertical scrolling if content overflows */
+		}
+
+		/* Additional styles for .main-content to ensure it behaves well inside main */
+		.main-content {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			/* Ensure full height for the content area */
+		}
+
+
+		.panel {
+			margin-bottom: 20px;
+			padding: 20px;
+			background-color: #f0f0f0;
+			border: 1px solid #ccc;
+			display: none;
+			/* Hide all panels by default */
+		}
+
+		/* Bottom links styling */
+		.bottom-links {
+			position: absolute;
+			bottom: 10px;
+			/* Adjust bottom spacing as needed */
+			left: 0;
+			width: 100%;
+		}
+
+		.bottom-links li {
+			padding: 10px;
+			border-top: 1px solid #555;
+		}
+
+		/* Form styling */
+		.register-form,
+		.search-form {
+			margin-top: 20px;
+		}
+
+		.register-form input,
+		.register-form select,
+		.search-form input {
+			margin-bottom: 10px;
+			width: 100%;
+			padding: 8px;
+			font-size: 14px;
+		}
+
+		.register-form button,
+		.search-form button {
+			padding: 10px 20px;
+			background-color: #007bff;
+			color: #fff;
+			border: none;
+			cursor: pointer;
+		}
+
+		/* Icon styling */
+		.icon {
+			margin-right: 10px;
+		}
+
+		/* Message for small screens */
+		.screen-small-message {
+			display: none;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			background-color: rgba(0, 0, 0, 0.8);
+			color: #fff;
+			padding: 20px;
+			z-index: 1000;
+		}
+
+		@media (max-width: 768px) {
+
+			/* Show message for small screens */
+			.screen-small-message {
+				display: block;
+			}
+
+			/* Hide main content and sidebar on small screens */
+			.sidebar,
+			.main-content {
+				display: none;
+			}
+		}
+
+		a {
+			color: white;
+			text-decoration: none;
+		}
+
+		a :hover {
+
+			color: white;
+		}
+
+		.image-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin-top: 20px;
+			height: 500%;
+			background-color: white;
+		}
+
+		img {
+			width: 100%;
+
+		}
+
+		#homehome {
+			background-color: white;
+			border-color: white;
+			position: fixed;
+		}
+
+
+		.success {
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+			width: 320px;
+			padding: 12px;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: start;
+			background: #EDFBD8;
+			border-radius: 8px;
+			border: 1px solid #84D65A;
+			box-shadow: 0px 0px 5px -3px #111;
+			align-items: center;
+
+
+		}
+
+		.success__icon {
+			width: 20px;
+			height: 20px;
+			transform: translateY(-2px);
+			margin-right: 8px;
+		}
+
+		.success__icon path {
+			fill: #84D65A;
+		}
+
+		.success__title {
+			font-weight: 500;
+			font-size: 14px;
+			color: #2B641E;
+		}
+
+		.success__close {
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+			margin-left: auto;
+		}
+
+		.success__close path {
+			fill: #2B641E;
+		}
+
+
+		/* Ensure dropdown and submenu are styled properly */
+		.dropdown-menu {
+			background-color: #212529;
+			/* Light grey background */
+		}
+
+		.dropdown-menu .dropdown-item {
+			color: #212529;
+			/* Dark text color for readability */
+		}
+
+		.dropdown-menu .dropdown-item:hover {
+			background-color: #495057;
+			/* Slightly darker grey on hover */
+			color: #212529;
+			/* Darker text color on hover */
+		}
+
+		/* Hide submenu by default */
+		#viewStudentsSubmenu {
+			display: none;
+		}
+
+		/* Show submenu when the parent item is active */
+		#viewStudentsSubmenu.show {
+			display: block;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<div class="row">
+			<!-- Sidebar -->
+
+			<nav class="col-md-3 col-lg-2 d-md-block sidebar">
+				<div class="sidebar-sticky">
+					<ul class="nav flex-column">
+						<li class="nav-item">
+							<a class="nav-link active" href="/admin">
+								<i class="fas fa-home icon"></i> Home
+							</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" href="#" id="studentsDropdown" role="button"
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+								<i class="fas fa-user-graduate icon"></i> Students
+							</a>
+							<div class="dropdown-menu" aria-labelledby="studentsDropdown">
+								<a class="dropdown-item" href="#register" onclick="showPanel('register-form')"><i
+										class="fas fa-plus-circle icon"></i> Register</a>
+								<a class="dropdown-item" href="#update" onclick="showPanel('update')"><i
+										class="fas fa-edit icon"></i> Update</a>
+								<a class="dropdown-item" href="#delete" onclick="showPanel('delete')"><i
+										class="fas fa-trash-alt icon"></i> Delete</a>
+								<a class="dropdown-item" href="#search" onclick="showPanel('search-form')"><i
+										class="fas fa-search icon"></i> Search</a>
+								<div class="dropdown-divider"></div>
+								<a class="dropdown-item dropdown-toggle" href="#" id="viewStudentsDropdown"
+									role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+									<i class="fas fa-user icon"></i> View Students
+								</a>
+								<div class="dropdown-menu" aria-labelledby="viewStudentsDropdown">
+									<a class="dropdown-item" href="#studentTable" onclick="showPanel('studentTable')"><i
+											class="fas fa-laptop-code icon"></i> Computer Students</a>
+									<a class="dropdown-item" href="#retailStudents"
+										onclick="showPanel('retailStudents')"><i class="fas fa-store icon"></i> Retail
+										Students</a>
+								</div>
+							</div>
+						</li>
+					</ul>
+
+					<!-- Bottom links -->
+					<ul class="nav flex-column bottom-links">
+						<li class="nav-item"><a class="nav-link" href="/logout"><i class="fas fa-sign-out-alt icon"></i>
+								Logout</a></li>
+					</ul>
+				</div>
+			</nav>
+
+
+			<!-- Main content -->
+			<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+				<div class="main-content">
+					<div class="panel" id="homehome">
+						<div id="home" class="image-container">
+							<img src="children.jpg" alt="an image here" height="10%">
+						</div>
+						<!-- Home content -->
+					</div>
+
+					<div id="update" class="panel">
+						<h2>Update Student</h2>
+						<form id="updateForm">
+							<div class="form-group">
+								<label for="identity-number-update">Identity Number</label>
+								<input type="text" id="up-up" name="identity-number-update" class="form-control"
+									maxlength="13" minlength="13" pattern="\d{13}" required="">
+							</div>
+							<button type="button" class="btn btn-primary" onclick="findStudent()"><i
+									class="fas fa-edit icon"></i> Update</button>
+						</form>
+					</div>
+
+					<div id="delete" class="panel">
+						<h2>Delete Student</h2>
+						<form id="deleteForm">
+							<div class="form-group">
+								<label for="identity-number-delete">Identity Number</label>
+								<input type="text" id="identity-number-delete" name="identity-number-delete"
+									class="form-control" maxlength="13" minlength="13" pattern="\d{13}" required="">
+							</div>
+							<button type="button" class="btn btn-primary" onclick="submitAndDeleteForm()"><i
+									class="fas fa-trash-alt icon"></i> Delete</button>
+						</form>
+					</div>
+
+					<!-- Register form -->
+					<!--####################################################################################################-->
+					<div id="register-form" class="panel register-form">
+						<h2>Register Students</h2>
+						<form id="registerForm">
+							<div class="form-group">
+								<label for="name">Name</label>
+								<input type="text" id="name" name="name" class="form-control" required>
+								<div id="nameError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="surname">Surname</label>
+								<input type="text" id="surname" name="surname" class="form-control" required>
+								<div id="surnameError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="contacts">Contacts</label>
+								<input type="text" id="contacts" name="contacts" class="form-control" maxlength="10"
+									minlength="10" pattern="\d{10}" required>
+								<div id="contactError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="identity-number-register">Identity Number</label>
+								<input type="text" id="identity-number-register" name="identity-number-register"
+									class="form-control" maxlength="13" minlength="13" pattern="\d{13}" required>
+								<div id="idError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="address">Address</label>
+								<input type="text" id="address" name="address" class="form-control" required>
+								<div id="addressError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="gender">Gender</label>
+								<select id="get-gender" name="get-gender" class="form-control" required
+									aria-placeholder="Select gender">
+									<option value="male">Male</option>
+									<option value="female">Female</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="type-welfare">Type Welfare</label>
+								<select id="type-welfare" name="type-welfare" class="form-control" required>
+
+									<option value="No">No</option>
+									<option value="SRD">SRD</option>
+									<option value="CSD">CSD</option>
+									<option value="CSG">CSG</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="matric-status">Matric Status</label>
+								<select id="matric-status" name="matric-status" class="form-control" required>
+
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="ward-number">Ward Number</label>
+								<input type="text" id="ward-number" name="ward-number" class="form-control" required>
+								<div id="wardError" class="error-message"></div>
+							</div>
+							<div class="form-group">
+								<label for="program">Program</label>
+								<select id="p-program" name="program" class="form-control" required>
+									<option value="Life Skills">Life Skills</option>
+									<option value="Computer">Computer Certificate</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="qualification">Other Qualification</label>
+								<input type="text" id="qualification" name="qualification" class="form-control">
+								<div id="qualificationError" class="error-message"></div>
+							</div>
+							<button type="button" class="btn btn-primary" class="fas fa-save icon"
+								onclick="registerStudent()"><i></i>Submit</button>
+						</form>
+					</div>
+
+					<!--update student details-->
+					<div id="update-student-form" class="panel register-form">
+						<h2>Update Student</h2>
+						<form action="/updateStudent" method="post">
+							<div class="form-group">
+								<label for="name">Name</label>
+								<input type="text" id="update-name" name="update-name" class="form-control" required>
+							</div>
+							<div class="form-group">
+								<label for="surname">Surname</label>
+								<input type="text" id="update-surname" name="update-surname" class="form-control"
+									required>
+							</div>
+							<div class="form-group">
+								<label for="contacts">Contacts</label>
+								<input type="text" id="update-contacts" name="update-contacts" class="form-control"
+									maxlength="10" minlength="10" pattern="\d{10}" required>
+							</div>
+							<div class="form-group">
+								<label for="identity-number-register">Identity Number</label>
+								<input type="text" id="update-identity-number-register"
+									name="update-identity-number-register" class="form-control" maxlength="13"
+									minlength="13" pattern="\d{13}" required>
+							</div>
+							<div class="form-group">
+								<label for="address">Address</label>
+								<input type="text" id="update-address" name="update-address" class="form-control"
+									required>
+							</div>
+
+							<div class="form-group">
+								<label for="type-welfare">Type Welfare</label>
+								<select id="update-type-welfare" name="update-type-welfare" class="form-control"
+									required>
+									<option value="">Select Type of Welfare</option>
+									<option value="No">No</option>
+									<option value="SRD">SRD</option>
+									<option value="CSD">CSD</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="matric-status">Matric Status</label>
+								<select id="update-matric-status" name="update-matric-status" class="form-control"
+									required>
+									<option value="">Select Matric Status</option>
+									<option value="yes">Yes</option>
+									<option value="no">No</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="ward-number">Ward Number</label>
+								<input type="text" id="update-ward-number" name="update-ward-number"
+									class="form-control" required>
+							</div>
+							<div class="form-group">
+								<label for="program">Program</label>
+								<select id="program" name="update-program" class="form-control" required>
+									<option value="">Select Program</option>
+									<option value="Life Skills">Life Skills</option>
+									<option value="Computer">Computer Certificate</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="qualification">Qualification</label>
+								<input type="text" id="update-qualification" name="update-qualification"
+									class="form-control">
+							</div>
+							<div class="form-group">
+
+								<input type="hidden" id="oldId" name="oldId" class="form-control">
+							</div>
+
+							<button type="submit" class="btn btn-primary" onclick="updateStud()"><i
+									class="fas fa-save icon"></i>Save</button>
+						</form>
+
+						<!--SHOW SUCCESS REGISTERED-->
+						<div class="panel" id="updateStud">
+							<div class="success__icon">
+								<svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+									xmlns="http://www.w3.org/2000/svg">
+									<path clip-rule="evenodd"
+										d="m12 1c-6.075 0-11 4.925-11 11s4.925 11 11 11 11-4.925 11-11-4.925-11-11-11zm4.768 9.14c.0878-.1004.1546-.21726.1966-.34383.0419-.12657.0581-.26026.0477-.39319-.0105-.13293-.0475-.26242-.1087-.38085-.0613-.11844-.1456-.22342-.2481-.30879-.1024-.08536-.2209-.14938-.3484-.18828s-.2616-.0519-.3942-.03823c-.1327.01366-.2612.05372-.3782.1178-.1169.06409-.2198.15091-.3027.25537l-4.3 5.159-2.225-2.226c-.1886-.1822-.4412-.283-.7034-.2807s-.51301.1075-.69842.2929-.29058.4362-.29285.6984c-.00228.2622.09851.5148.28067.7034l3 3c.0983.0982.2159.1748.3454.2251.1295.0502.2681.0729.4069.0665.1387-.0063.2747-.0414.3991-.1032.1244-.0617.2347-.1487.3236-.2554z"
+										fill="#393a37" fill-rule="evenodd"></path>
+								</svg>
+
+							</div>
+							<div class="success__title">Student Successfully Updted</div>
+							<div class="success__close"><a href="/admin"><svg height="20" viewBox="0 0 20 20" width="20"
+										xmlns="http://www.w3.org/2000/svg">
+										<path
+											d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+											fill="#393a37"></path>
+									</svg></a></div>
+						</div>
+					</div>
+
+					<!--SHOW SUCCESS REGISTERED-->
+					<div class="panel" id="success">
+						<div class="success__icon">
+							<svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+								xmlns="http://www.w3.org/2000/svg">
+								<path clip-rule="evenodd"
+									d="m12 1c-6.075 0-11 4.925-11 11s4.925 11 11 11 11-4.925 11-11-4.925-11-11-11zm4.768 9.14c.0878-.1004.1546-.21726.1966-.34383.0419-.12657.0581-.26026.0477-.39319-.0105-.13293-.0475-.26242-.1087-.38085-.0613-.11844-.1456-.22342-.2481-.30879-.1024-.08536-.2209-.14938-.3484-.18828s-.2616-.0519-.3942-.03823c-.1327.01366-.2612.05372-.3782.1178-.1169.06409-.2198.15091-.3027.25537l-4.3 5.159-2.225-2.226c-.1886-.1822-.4412-.283-.7034-.2807s-.51301.1075-.69842.2929-.29058.4362-.29285.6984c-.00228.2622.09851.5148.28067.7034l3 3c.0983.0982.2159.1748.3454.2251.1295.0502.2681.0729.4069.0665.1387-.0063.2747-.0414.3991-.1032.1244-.0617.2347-.1487.3236-.2554z"
+									fill="#393a37" fill-rule="evenodd"></path>
+							</svg>
+
+						</div>
+						<div class="success__title">Student Successfully Registered</div>
+						<div class="success__close"><a href="/admin"><svg height="20" viewBox="0 0 20 20" width="20"
+									xmlns="http://www.w3.org/2000/svg">
+									<path
+										d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+										fill="#393a37"></path>
+								</svg></a></div>
+					</div>
+
+					<!-- Search form -->
+					<div id="search-form" class="panel">
+						<h2>Search Student</h2>
+						<form id="searchForm">
+							<div class="form-group">
+								<label for="identity-number-search">Identity Number</label>
+								<input type="text" id="student-search" name="identity-number-search"
+									class="form-control" maxlength="13" minlength="13" pattern="\d{13}" required>
+							</div>
+							<button type="button" class="btn btn-primary" onclick="studentSearch()"><i
+									class="fas fa-search icon"></i> Search</button>
+						</form>
+
+
+						<!--update student details-->
+						<div id="results-for-search" class="panel register-form">
+							<h2>Student Found</h2>
+							<form action="/register-retail" method="post">
+								<div class="form-group">
+									<label for="name">Name</label>
+									<input type="text" id="search-name" name="retail-name" class="form-control"
+										readonly>
+								</div>
+								<div class="form-group">
+									<label for="surname">Surname</label>
+									<input type="text" id="search-surname" name="retail-surname" class="form-control"
+										readonly>
+								</div>
+								<div class="form-group">
+									<label for="contacts">Contacts</label>
+									<input type="text" id="search-contacts" name="retail-contacts" class="form-control"
+										readonly>
+								</div>
+								<div class="form-group">
+									<label for="identity-number-register">Identity Number</label>
+									<input type="text" id="search-identity-number-register"
+										name="retail-identity-number-register" class="form-control" readonly>
+								</div>
+								<div class="form-group">
+									<label for="address">Address</label>
+									<input type="text" id="search-address" name="retail-address" class="form-control"
+										readonly>
+								</div>
+
+								<div class="form-group">
+									<label for="gender">Gender</label>
+									<select id="search-gender" name="retail-gender" class="form-control" readonly>
+										<option value="">Select Gender</option>
+										<option value="male">Male</option>
+										<option value="female">Female</option>
+									</select>
+								</div>
+
+								<div class="form-group">
+									<label for="type-welfare">Type Welfare</label>
+									<select id="search-type-welfare" name="retail-type-welfare" class="form-control"
+										readonly>
+										<option value="">Select Type of Welfare</option>
+										<option value="No">No</option>
+										<option value="SRD">SRD</option>
+										<option value="CSD">CSD</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="matric-status">Matric Status</label>
+									<select id="search-matric-status" name="retail-matric-status" class="form-control"
+										readonly>
+										<option value="">Select Matric Status</option>
+										<option value="yes">Yes</option>
+										<option value="no">No</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="ward-number">Ward Number</label>
+									<input type="text" id="search-ward-number" name="retail-ward-number"
+										class="form-control" readonly>
+								</div>
+								<div class="form-group">
+									<label for="qualification">Qualification</label>
+									<input type="text" id="search-qualification" name="retail-qualification"
+										class="form-control" readonly>
+								</div>
+
+
+								<button type="button" class="btn btn-primary"><a href="/admin"><i
+											class="fa fa-close icon"></i>Close </a></button>
+
+								<button type="submit" class="btn btn-primary" onclick="registerRetailStud()"><i
+										class="fas fa-save icon"></i>Register
+									To Retail Management</button>
+							</form>
+
+							<div class="panel" id="retailSuccess">
+								<div class="success__icon">
+									<svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+										xmlns="http://www.w3.org/2000/svg">
+										<path clip-rule="evenodd"
+											d="m12 1c-6.075 0-11 4.925-11 11s4.925 11 11 11 11-4.925 11-11-4.925-11-11-11zm4.768 9.14c.0878-.1004.1546-.21726.1966-.34383.0419-.12657.0581-.26026.0477-.39319-.0105-.13293-.0475-.26242-.1087-.38085-.0613-.11844-.1456-.22342-.2481-.30879-.1024-.08536-.2209-.14938-.3484-.18828s-.2616-.0519-.3942-.03823c-.1327.01366-.2612.05372-.3782.1178-.1169.06409-.2198.15091-.3027.25537l-4.3 5.159-2.225-2.226c-.1886-.1822-.4412-.283-.7034-.2807s-.51301.1075-.69842.2929-.29058.4362-.29285.6984c-.00228.2622.09851.5148.28067.7034l3 3c.0983.0982.2159.1748.3454.2251.1295.0502.2681.0729.4069.0665.1387-.0063.2747-.0414.3991-.1032.1244-.0617.2347-.1487.3236-.2554z"
+											fill="#393a37" fill-rule="evenodd"></path>
+									</svg>
+
+								</div>
+								<div class="success__title">Student Successfully Registered</div>
+								<div class="success__close"><a href="/admin"><svg height="20" viewBox="0 0 20 20"
+											width="20" xmlns="http://www.w3.org/2000/svg">
+											<path
+												d="m15.8333 5.34166-1.175-1.175-4.6583 4.65834-4.65833-4.65834-1.175 1.175 4.65833 4.65834-4.65833 4.6583 1.175 1.175 4.65833-4.6583 4.6583 4.6583 1.175-1.175-4.6583-4.6583z"
+												fill="#393a37"></path>
+										</svg></a></div>
+							</div>
+						</div>
+
+
+
+					</div>
+
+					<div id="studentTable" class="panel">
+
+						<h1>Life Skills and Computer Students</h1>
+
+					</div>
+
+					<div id="retailStudents" class="panel">
+
+						<h1>Retail Management Students</h1>
+
+					</div>
+
+				</div>
+			</main>
+		</div>
+	</div>
+
+
+	<!-- Message for small screens -->
+	<div class="screen-small-message">
+		<h3>Screen is too small</h3>
+		<p>Please view this page on a larger screen for better experience.</p>
+	</div>
+
+	<!-- Bootstrap JS and dependencies -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<!-- Font Awesome Icons JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+	<!-- Bootstrap JavaScript -->
+	<!-- Bootstrap CSS -->
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+	<!-- Custom JavaScript for smooth scroll and form handling -->
+	<script>
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const viewStudentsDropdown = document.getElementById('viewStudentsDropdown');
+			const viewStudentsSubmenu = document.getElementById('viewStudentsSubmenu');
+
+			// Function to show submenu
+			function showSubmenu() {
+				viewStudentsSubmenu.classList.add('show');
+			}
+
+			// Function to hide submenu
+			function hideSubmenu() {
+				viewStudentsSubmenu.classList.remove('show');
+			}
+
+			// Show submenu when mouse button is pressed
+			viewStudentsDropdown.addEventListener('mousedown', function (e) {
+				e.preventDefault();
+				showSubmenu();
+			});
+
+			// Hide submenu when mouse button is released
+			document.addEventListener('mouseup', function (e) {
+				if (!viewStudentsDropdown.contains(e.target) && !viewStudentsSubmenu.contains(e.target)) {
+					hideSubmenu();
+				}
+			});
+		});
+
+
+		document.getElementById('homehome').style.display = 'block';
+		/*	document.getElementById('success').style.display = 'none';	*/	// Function to hide the update student form
+		function hideUpdateStudentForm() {
+			var updateStudentForm = document.getElementById('update-student-form');
+			updateStudentForm.style.display = 'none';
+		}
+
+
+		// Function to show panel based on ID
+		function showPanel(panelId) {
+			// Hide all panels
+			document.querySelectorAll('.panel').forEach(panel => {
+				panel.style.display = 'none';
+			});
+
+			// Display the selected panel
+			document.getElementById(panelId).style.display = 'block';
+
+			// Hide update student form if it's visible
+			hideUpdateStudentForm();
+
+		}
+
+		// Function to handle submission of update form
+		function submitAndUpdateForm() {
+			// Hide update form
+			document.getElementById('update').style.display = 'none';
+
+			// Hide update student form
+			hideUpdateStudentForm();
+		}
+
+
+		// Function to hide the update student form initially
+		document.addEventListener('DOMContentLoaded', function () {
+			hideUpdateStudentForm();
+		});
+
+
+		function showUpdateStudentForm(user) {
+			// Hide all panels except the update-student-form
+			document.querySelectorAll('.panel').forEach(panel => {
+				panel.style.display = 'none';
+			});
+
+			var updateStudentForm = document.getElementById('update-student-form');
+			updateStudentForm.style.display = 'block';
+			var name = document.getElementById('update-name');
+			name.placeholder = user.name;
+			name.value = user.name;
+
+			var surname = document.getElementById('update-surname');
+			surname.placeholder = user.surname;
+			surname.value = user.surname;
+
+			var contact = document.getElementById('update-contacts');
+			contact.placeholder = user.contact;
+			contact.value = user.contact;
+
+
+			var id = document.getElementById('update-identity-number-register');
+			id.placeholder = user.id;
+			id.value = user.id;
+
+			var address = document.getElementById('update-address');
+			address.placeholder = user.address;
+			address.value = user.address;
+
+			var welfare = document.getElementById('update-type-welfare');
+			welfare.placeholder = user.typeWelfare;
+			welfare.value = user.typeWelfare;
+
+			var matric = document.getElementById('update-matric-status');
+			matric.placeholder = user.matricStatus;
+			matric.value = user.matricStatus;
+
+			var ward = document.getElementById('update-ward-number');
+			ward.placeholder = user.ward;
+			ward.value = user.ward;
+
+			var qualification = document.getElementById('update-qualification');
+			qualification.placeholder = user.qualification;
+			qualification.value = user.qualification;
+
+			var oldId = document.getElementById('oldId');
+			oldId.placeholder = user.id;
+			oldId.value = user.id;
+		}
+
+		// Smooth scroll to anchor links
+		document.querySelectorAll('a.nav-link[href^="#"]').forEach(anchor => {
+			anchor.addEventListener('click', function (e) {
+				e.preventDefault();
+
+				const targetId = this.getAttribute('href').substring(1);
+				const targetElement = document.getElementById(targetId);
+
+				if (targetElement) {
+					targetElement.scrollIntoView({behavior: 'smooth'});
+				}
+			});
+		});
+
+		// Function to show panel based on ID
+		function showPanel(panelId) {
+			// Hide all panels
+			document.querySelectorAll('.panel').forEach(panel => {
+				panel.style.display = 'none';
+			});
+
+			// Display the selected panel
+			document.getElementById(panelId).style.display = 'block';
+		}
+
+		// Function to handle submission of update form
+		function submitAndUpdateForm() {
+			// Hide update form
+			document.getElementById('update').style.display = 'none';
+
+
+		}
+
+		// Function to handle submission of delete form
+		function submitAndDeleteForm() {
+
+
+			var studentId = document.getElementById('identity-number-delete').value;
+
+			fetch('findStudent')
+				.then(response => response.json())
+				.then(users => {
+					let found = false;
+					users.forEach(user => {
+						if (user.id == studentId) {
+
+							found = true;
+
+							displayErrorMessageDelete("Student Deleted");
+							postStudentId(user.id);
+
+
+						}
+					});
+					if (!found) {
+
+						displayErrorMessageDelete("Student Not found");
+
+					}
+				})
+				.catch(error => console.error('Error fetching users:', error));
+
+		}
+
+
+		function postStudentId(studentId) {
+			fetch('/delete-student', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({id: studentId})
+
+			})
+				.catch(error => {
+					console.error('Error posting student ID:', error);
+					// Handle error if needed
+				});
+
+
+		}
+
+		function displayErrorMessageDelete(message, userId) {
+			var updatePanel = document.getElementById('delete');
+			var messageDiv = document.createElement('div');
+
+			if (message === "Student Deleted") {
+
+				messageDiv.className = 'alert alert-success';
+
+				messageDiv.textContent = message;
+			}
+			else {
+
+				messageDiv.className = 'alert alert-danger';
+				messageDiv.textContent = message;
+			}
+
+
+			// Check if there's already a message displayed, remove it before adding a new one
+			clearErrorMessageDelete();
+
+			updatePanel.appendChild(messageDiv);
+
+
+		}
+
+		function clearErrorMessageDelete() {
+			var updatePanel = document.getElementById('delete');
+			var existingMessage = updatePanel.querySelector('.alert');
+			if (existingMessage) {
+				updatePanel.removeChild(existingMessage);
+			}
+		}
+
+		function registerStudent() {
+
+			clearErrorMessageRegister();
+
+			var name = document.getElementById('name').value;
+			var surname = document.getElementById('surname').value;
+			var gender = document.getElementById('get-gender').value;
+			var contact = document.getElementById('contacts').value;
+			var address = document.getElementById('address').value;
+			var welfare = document.getElementById('type-welfare').value;
+			var matric = document.getElementById('matric-status').value;
+			var ward = document.getElementById('ward-number').value;
+			var program = document.getElementById('p-program').value;
+			var qualification = document.getElementById('qualification').value;
+			var studentId = document.getElementById('identity-number-register').value;
+
+			var nameError = document.getElementById("nameError");
+			var surnameError = document.getElementById("surnameError");
+			var contactError = document.getElementById("contactError");
+			var idError = document.getElementById("idError");
+			var addressError = document.getElementById("addressError");
+			var wardError = document.getElementById("wardError");
+
+
+			nameError.innerText = "";
+			surnameError.innerText = "";
+			contactError.innerText = "";
+			idError.innerText = "";
+			addressError.innerText = "";
+			wardError.innerText = "";
+			qualificationError.innerText = "";
+
+
+
+			let containsNumber = /\d/.test(name);
+			let containsNumber2 = /\d/.test(name);
+
+			if (containsNumber) {
+
+				nameError.innerText = "Name cannot contain a number.";
+				nameError.style.color = "red";
+				return;
+			}
+
+			if (containsNumber2) {
+
+				surnameError.innerText = "Surname cannot contain a number.";
+				surnameError.style.color = "red";
+				return;
+			}
+
+
+			if (name === "") {
+
+				nameError.innerText = "Name is required.";
+				nameError.style.color = "red"; // Set text color to red
+
+			}
+
+			if (surname === "") {
+
+				surnameError.innerText = "Surname is required.";
+				surnameError.style.color = "red"; // Set text color to red
+			}
+
+			if (contact === "") {
+
+				contactError.innerText = "Contact is required.";
+				contactError.style.color = "red"; // Set text color to red
+			}
+
+			let cellNumber = /[a-zA-Z]/.test(contact);
+
+			if (cellNumber) {
+				contactError.innerText = "Contact is invalid.";
+				contactError.style.color = "red";
+				return;
+			}
+
+
+			if (studentId === "") {
+
+				idError.innerText = "ID number is required.";
+				idError.style.color = "red"; // Set text color to red
+			}
+
+			let idid = /[a-zA-Z]/.test(studentId);
+
+			if (idid) {
+				idError.innerText = "Invalid ID Number.";
+				idError.style.color = "red";
+				return;
+			}
+
+
+			if (address === "") {
+
+				addressError.innerText = "Contact is required.";
+				addressError.style.color = "red"; // Set text color to red
+			}
+
+			if (ward === "") {
+
+				wardError.innerText = "Ward Number is required.";
+				wardError.style.color = "red"; // Set text color to red
+			}
+
+			let warr = /[a-zA-Z]/.test(studentId);
+
+			if (warr) {
+				wardError.innerText = "Ward Number Invalid.";
+				wardError.style.color = "red";
+				return;
+			}
+
+			// If any field is empty, return without proceeding
+			if (name === "" || surname === "" || contact === "" || studentId === "" || address === "" || ward === "") {
+				return;
+			}
+
+			else {
+
+				fetch('findStudent')
+					.then(response => response.json())
+					.then(users => {
+						let found = false;
+						users.forEach(user => {
+							if (user.id == studentId) {
+
+								found = true;
+
+								displayErrorMessageRegister("Student Already Registered");
+								registerStudentID(user.id);
+
+
+							}
+						});
+						if (!found) {
+
+							fetch('/register-student', {
+								method: 'POST',
+								headers: {
+									'Content-Type': 'application/json'
+								},
+								body: JSON.stringify({
+									id: studentId,
+									name: name,
+									get_gender: gender,
+									surname: surname,
+									contact: contact,
+									address: address,
+									welfare: welfare,
+									matric: matric,
+									ward: ward,
+									program: program,
+									qualification: qualification
+								})
+
+
+
+							})
+
+								.catch(error => {
+									console.error('Error posting student data:', error);
+									// Handle error if needed
+								});
+
+							var suc = document.getElementById('success').style.display = 'block';
+
+
+						}
+					})
+					.catch(error => console.error('Error fetching users:', error));
+
+
+			}
+
+		}
+
+
+		function registerStudentID(studentId) {
+			fetch('/delete-student', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({id: studentId})
+
+			})
+				.catch(error => {
+					console.error('Error posting student ID:', error);
+					// Handle error if needed
+				});
+
+
+		}
+
+		function displayErrorMessageRegister(message, userId) {
+			var updatePanel = document.getElementById('register-form');
+			var messageDiv = document.createElement('div');
+			messageDiv.className = 'alert alert-danger';
+			messageDiv.textContent = message;
+
+			// Check if there's already a message displayed, remove it before adding a new one
+			clearErrorMessageRegister();
+
+			updatePanel.appendChild(messageDiv);
+
+
+		}
+
+		function clearErrorMessageRegister() {
+			var updatePanel = document.getElementById('register-form');
+			var existingMessage = updatePanel.querySelector('.alert');
+			if (existingMessage) {
+				updatePanel.removeChild(existingMessage);
+			}
+		}
+
+		// Function to handle submission of register form
+		function submitRegisterForm() {
+			// Form validation
+			const form = document.getElementById('registerForm');
+			if (!form.checkValidity()) {
+				// If the form is invalid, prevent form submission
+				form.reportValidity();
+				return false;
+			}
+
+			// Handle register form submission logic here
+			alert('Register form submitted'); // Example alert
+
+			return true;
+		}
+
+
+
+		function findStudent() {
+
+			var id = document.getElementById("up-up").value;
+
+			fetch('findStudent')
+				.then(response => response.json())
+				.then(users => {
+					let found = false;
+					users.forEach(user => {
+						if (user.id == id) {
+
+							found = true;
+							showUpdateStudentForm(user);
+						}
+					});
+					if (!found) {
+
+						displayErrorMessage("Student not found");
+					} else {
+						// Clear any existing error message
+						clearErrorMessage();
+					}
+				})
+				.catch(error => console.error('Error fetching users:', error));
+		}
+
+		function displayErrorMessage(message) {
+			var updatePanel = document.getElementById('update');
+			var messageDiv = document.createElement('div');
+			messageDiv.className = 'alert alert-danger';
+			messageDiv.textContent = message;
+
+			// Check if there's already a message displayed, remove it before adding a new one
+			clearErrorMessage();
+
+			updatePanel.appendChild(messageDiv);
+		}
+
+		function clearErrorMessage() {
+			var updatePanel = document.getElementById('update');
+			var existingMessage = updatePanel.querySelector('.alert');
+			if (existingMessage) {
+				updatePanel.removeChild(existingMessage);
+			}
+		}
+
+
+		function studentSearch() {
+
+
+			var studentId = document.getElementById('student-search').value;
+
+			fetch('findStudent')
+				.then(response => response.json())
+				.then(users => {
+					let found = false;
+					users.forEach(user => {
+						if (user.id == studentId) {
+
+							found = true;
+
+							showSearchedStudent(user);
+
+						}
+					});
+					if (!found) {
+
+						displayErrorMessageSearch("Student Not found");
+
+
+					}
+					else {
+						clearErrorMessageSearch();
+					}
+				})
+				.catch(error => console.error('Error fetching users:', error));
+
+
+		}
+
+		function displayErrorMessageSearch(message) {
+			var studentResults = document.getElementById('results-for-search');
+			studentResults.style.display = 'none';
+			var updatePanel = document.getElementById('search-form');
+			var messageDiv = document.createElement('div');
+			messageDiv.className = 'alert alert-danger';
+			messageDiv.textContent = message;
+
+			// Check if there's already a message displayed, remove it before adding a new one
+			clearErrorMessageSearch();
+
+			updatePanel.appendChild(messageDiv);
+		}
+
+		function clearErrorMessageSearch() {
+			var updatePanel = document.getElementById('search-form');
+			var existingMessage = updatePanel.querySelector('.alert');
+			if (existingMessage) {
+				updatePanel.removeChild(existingMessage);
+			}
+		}
+
+		function showSearchedStudent(user) {
+			// Hide all panels except the update-student-form
+			document.querySelectorAll('.panel').forEach(panel => {
+				panel.style.display = 'none';
+			});
+
+			var updateStudentForm = document.getElementById('search-form');
+			updateStudentForm.style.display = 'block';
+
+			var studentResults = document.getElementById('results-for-search');
+			studentResults.style.display = 'block';
+
+
+			var name = document.getElementById('search-name');
+			name.placeholder = user.name;
+			name.value = user.name;
+
+			var gender = document.getElementById('search-gender');
+			gender.placeholder = user.gender;
+			gender.value = user.gender;
+
+			var surname = document.getElementById('search-surname');
+			surname.placeholder = user.surname;
+			surname.value = user.surname;
+
+			var contact = document.getElementById('search-contacts');
+			contact.placeholder = user.contact;
+			contact.value = "0" + user.contact;
+
+			var id = document.getElementById('search-identity-number-register');
+			id.placeholder = user.id;
+			id.value = user.id;
+
+			var address = document.getElementById('search-address');
+			address.placeholder = user.address;
+			address.value = user.address;
+
+			var welfare = document.getElementById('search-type-welfare');
+			welfare.placeholder = user.typeWelfare;
+			welfare.value = user.typeWelfare;
+
+			var matric = document.getElementById('search-matric-status');
+			matric.placeholder = user.matricStatus;
+			matric.value = user.matricStatus;
+
+			var ward = document.getElementById('search-ward-number');
+			ward.placeholder = user.ward;
+			ward.value = user.ward;
+
+			var qualification = document.getElementById('search-qualification');
+			qualification.placeholder = user.qualification;
+			qualification.value = user.qualification;
+
+		}
+
+		fetch('/findStudent') // Adjust the endpoint based on your Spring Boot mappings
+			.then(response => response.json())
+			.then(students => {
+				const table = document.createElement('table');
+				table.setAttribute('border', '1'); // Set border attribute directly
+				table.style.borderCollapse = 'collapse'; // Collapse borders
+
+				table.innerHTML = `
+		                <thead>
+		                    <tr>
+		                        <th>Initials</th>
+		                        <th>Name</th>
+		                        <th>Surname</th>
+		                        <th>ID Number</th>
+		                        <th>Gender</th>
+		                        <th>Contact</th>
+		                        <th>Address</th>
+		                        <th>Welfare</th>
+		                        <th>Matric</th>
+		                        <th>Ward</th>
+		                        <th>Program</th>
+		                        <th>Qualification</th>
+		                        <!-- Add more headers as per your Student entity -->
+		                    </tr>
+		                </thead>
+		                <tbody>
+		                    ${students.map(student => `
+		                        <tr>
+		                            <td>${student.initial}</td>
+		                            <td>${student.name}</td>
+		                            <td>${student.surname}</td>
+		                            <td>${student.id}</td>
+		                            <td>${student.gender}</td>
+		                            <td>${student.contact}</td>
+		                            <td>${student.address}</td>
+		                            <td>${student.typeWelfare}</td>
+		                            <td>${student.matricStatus}</td>
+		                            <td>${student.ward}</td>
+		                            <td>${student.program}</td>
+		                            <td>${student.qualification}</td>
+		                            <!-- Add more columns as per your Student entity -->
+		                        </tr>
+		                    `).join('')}
+		                </tbody>
+		            `;
+
+				// Append table to the document
+				document.getElementById('studentTable').appendChild(table);
+
+				// Create export button
+				const exportButton = document.createElement('button');
+				exportButton.textContent = 'Export to Excel';
+				exportButton.addEventListener('click', function () {
+					exportTableToExcel(table);
+				});
+
+				// Append export button to the document
+				document.getElementById('studentTable').appendChild(exportButton);
+			})
+			.catch(error => console.error('Error fetching students:', error));
+
+		// Function to export table data to Excel
+		function exportTableToExcel(table) {
+			const rows = table.querySelectorAll('tbody > tr');
+			const csv = [];
+
+			// Build CSV string
+			rows.forEach(row => {
+				const rowData = [];
+				Array.from(row.children).forEach(cell => {
+					rowData.push('"' + cell.textContent.replace(/"/g, '""') + '"');
+				});
+				csv.push(rowData.join(','));
+			});
+
+			// Create download link
+			const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
+			const encodedUri = encodeURI(csvContent);
+			const link = document.createElement('a');
+			link.setAttribute('href', encodedUri);
+			link.setAttribute('download', 'life_skills&computer_students.csv');
+			document.body.appendChild(link); // Required for Firefox
+			link.click();
+			document.body.removeChild(link);
+		}
+
+
+		fetch('/fetch_retail_students') // Adjust the endpoint based on your Spring Boot mappings
+			.then(response => response.json())
+			.then(students => {
+				const table = document.createElement('table');
+				table.setAttribute('border', '1'); // Set border attribute directly
+				table.style.borderCollapse = 'collapse'; // Collapse borders
+
+				table.innerHTML = `
+			                <thead>
+			                    <tr>
+			                        <th>Initials</th>
+			                        <th>Name</th>
+			                        <th>Surname</th>
+			                        <th>ID Number</th>
+			                        <th>Gender</th>
+			                        <th>Contact</th>
+			                        <th>Address</th>
+			                        <th>Welfare</th>
+			                        <th>Matric</th>
+			                        <th>Ward</th>
+			                        <th>Program</th>
+			                        <th>Qualification</th>
+			                        <!-- Add more headers as per your Student entity -->
+			                    </tr>
+			                </thead>
+			                <tbody>
+			                    ${students.map(student => `
+			                        <tr>
+			                            <td>${student.initial}</td>
+			                            <td>${student.name}</td>
+			                            <td>${student.surname}</td>
+			                            <td>${student.id}</td>
+			                            <td>${student.gender}</td>
+			                            <td>${student.contact}</td>
+			                            <td>${student.address}</td>
+			                            <td>${student.typeWelfare}</td>
+			                            <td>${student.matricStatus}</td>
+			                            <td>${student.ward}</td>
+			                            <td>${student.program}</td>
+			                            <td>${student.qualification}</td>
+			                            <!-- Add more columns as per your Student entity -->
+			                        </tr>
+			                    `).join('')}
+			                </tbody>
+			            `;
+
+				// Append table to the document
+				document.getElementById('retailStudents').appendChild(table);
+
+				// Create export button
+				const exportButton = document.createElement('button');
+				exportButton.textContent = 'Export to Excel';
+				exportButton.addEventListener('click', function () {
+					exportTableToExcel(table);
+				});
+
+				// Append export button to the document
+				document.getElementById('retailStudents').appendChild(exportButton);
+			})
+			.catch(error => console.error('Error fetching students:', error));
+
+		// Function to export table data to Excel
+		function exportTableToExcel(table) {
+			const rows = table.querySelectorAll('tbody > tr');
+			const csv = [];
+
+			// Build CSV string
+			rows.forEach(row => {
+				const rowData = [];
+				Array.from(row.children).forEach(cell => {
+					rowData.push('"' + cell.textContent.replace(/"/g, '""') + '"');
+				});
+				csv.push(rowData.join(','));
+			});
+
+			// Create download link
+			const csvContent = 'data:text/csv;charset=utf-8,' + csv.join('\n');
+			const encodedUri = encodeURI(csvContent);
+			const link = document.createElement('a');
+			link.setAttribute('href', encodedUri);
+			link.setAttribute('download', 'retail_students.csv');
+			document.body.appendChild(link); // Required for Firefox
+			link.click();
+			document.body.removeChild(link);
+		}
+
+
+		function registerRetailStud() {
+
+			document.getElementById('retailSuccess').style.display = 'block';
+
+		}
+
+
+		function updateStud() {
+
+			document.getElementById('updateStud').style.display = 'block';
+
+		}
+
+
+
+	</script>
+</body>
+
+</html>
